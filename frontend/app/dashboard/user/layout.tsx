@@ -67,8 +67,8 @@ export default function DashboardLayout({
               <SidebarGroupContent>
                 <SidebarMenu>
                   <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={pathname === "/dashboard"}>
-                      <Link href="/dashboard">
+                    <SidebarMenuButton asChild isActive={pathname === "/dashboard/user"}>
+                      <Link href="/dashboard/user">
                         <Home className="h-4 w-4" />
                         <span>Overview</span>
                       </Link>
@@ -108,7 +108,7 @@ export default function DashboardLayout({
                   </SidebarMenuItem>
                   <SidebarMenuItem>
                     <SidebarMenuButton asChild isActive={pathname === "/dashboard/privacy"}>
-                      <Link href="/dashboard/privacy">
+                      <Link href="/dashboard/user/privacy">
                         <Lock className="h-4 w-4" />
                         <span>Privacy & Consent</span>
                       </Link>

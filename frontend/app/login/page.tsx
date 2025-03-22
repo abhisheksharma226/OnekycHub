@@ -40,7 +40,7 @@ export default function LoginPage() {
   
     try {
       // Replace this with your actual backend API URL
-      const apiUrl = "https://onekychub.onrender.com/api/login"
+      const apiUrl = "http://localhost:8000/api/login"
   
       // Make API request
       const response = await fetch(apiUrl, {
