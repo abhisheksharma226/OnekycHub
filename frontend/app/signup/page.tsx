@@ -68,7 +68,7 @@ export default function SignupPage() {
             body: JSON.stringify(data),
         });
         if (response.ok) {
-            window.location.href = "/dashboard";
+            window.location.href = "/login";
         } else {
             setError("Failed to register. Please try again.");
         }
