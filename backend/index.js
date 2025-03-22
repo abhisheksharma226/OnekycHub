@@ -6,6 +6,7 @@ const cors = require('cors');
 const connectToMongoDB = require('./db/db');
 const login = require('./routes/login');
 const singup = require('./routes/singup')
+const dashboard = require('./routes/dashboard');
 
 
 // Middleware
@@ -18,6 +19,7 @@ connectToMongoDB();
 
 app.use('/api/', login);
 app.use('/api/', singup);
+app.use('/api/', dashboard);
 
 
 app.get('/', (req, res) => {
