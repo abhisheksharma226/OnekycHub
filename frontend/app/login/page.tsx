@@ -14,6 +14,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
+// Define a schema for validation (shared for now)
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
   password: z.string().min(8, { message: "Password must be at least 8 characters" }),
@@ -23,6 +24,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [activeTab, setActiveTab] = useState<"user" | "institution" | "admin">("user") // Track active tab
 
   const {
     register,
@@ -35,20 +37,42 @@ export default function LoginPage() {
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
     setIsLoading(true)
     setError(null)
-
+  
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      // In a real app, you would call your authentication API here
-      // For demo purposes, we'll just redirect to the dashboard
-      window.location.href = "/dashboard"
-    } catch (err) {
-      setError("Invalid email or password. Please try again.")
+      // Replace this with your actual backend API URL
+      const apiUrl = "https://onekychub.onrender.com/api/login"
+  
+      // Make API request
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+          loginType: activeTab,
+        }),
+      });
+      
+      if (!response.ok) {
+        const errorDetails = await response.json();
+        console.error("Error details:", errorDetails);
+        throw new Error(errorDetails.message || "Invalid email or password. Please try again.");
+      }
+      
+  
+      const result = await response.json()
+  
+      // Handle success (e.g., save token, redirect)
+      console.log("Login successful:", result)
+      window.location.href = `/dashboard/${activeTab}` // Redirect based on user type
+    } catch (err: any) {
+      setError(err.message || "Something went wrong. Please try again.")
     } finally {
       setIsLoading(false)
     }
   }
+  
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-gray-50 to-white dark:from-gray-950 dark:to-black p-4 relative">
@@ -62,7 +86,9 @@ export default function LoginPage() {
       </Link>
 
       <div className="w-full max-w-md relative z-10">
-        <Tabs defaultValue="user" className="w-full">
+        <Tabs defaultValue="user"   
+          onValueChange={(value) => setActiveTab(value as "user" | "institution" | "admin")}
+          className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-8 bg-white dark:bg-black rounded-lg p-1 shadow-md border border-gray-200 dark:border-gray-800">
             <TabsTrigger
               value="user"

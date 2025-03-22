@@ -28,7 +28,7 @@ const signupSchema = z
       .regex(/[0-9]/, { message: "Password must contain at least one number" })
       .regex(/[^A-Za-z0-9]/, { message: "Password must contain at least one special character" }),
     confirmPassword: z.string(),
-    terms: z.boolean().refine((val) => val === true, { message: "You must accept the terms and conditions" }),
+    terms: z.boolean().refine((val) => val === false, { message: "You must accept the terms and conditions" }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
@@ -45,7 +45,7 @@ export default function SignupPage() {
     register,
     handleSubmit,
     watch,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -60,23 +60,30 @@ export default function SignupPage() {
   const hasNumber = /[0-9]/.test(password)
   const hasSpecial = /[^A-Za-z0-9]/.test(password)
 
-  const onSubmit = async (data: z.infer<typeof signupSchema>) => {
-    setIsLoading(true)
-    setError(null)
-
+  const onSubmit = async (data: any) => {
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      // In a real app, you would call your registration API here
-      // For demo purposes, we'll just redirect to the dashboard
-      window.location.href = "/dashboard"
+        const response = await fetch("https://onekychub.onrender.com/api/signup", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+        });
+        if (response.ok) {
+            window.location.href = "/dashboard";
+        } else {
+            setError("Failed to register. Please try again.");
+        }
     } catch (err) {
-      setError("An error occurred during registration. Please try again.")
-    } finally {
-      setIsLoading(false)
+        setError("An error occurred. Please try again later.");
     }
-  }
+};
+
+// //auto scroll to first error field
+// const handleInvalid = (errors: any) => {
+//   const firstErrorField = document.querySelector(`[name="${Object.keys(errors)[0]}"]`);
+//   if (firstErrorField) {
+//       firstErrorField.scrollIntoView({ behavior: "smooth" });
+//   }
+
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-gray-50 to-white dark:from-gray-950 dark:to-black p-4 relative">
@@ -276,7 +283,7 @@ export default function SignupPage() {
                     )}
                   </div>
 
-                  <div className="flex items-center space-x-2 pt-2">
+                  {/* <div className="flex items-center space-x-2 pt-2">
                     <Checkbox
                       id="terms"
                       className="h-5 w-5 border-gray-300 dark:border-gray-700 data-[state=checked]:bg-black data-[state=checked]:border-black dark:data-[state=checked]:bg-white dark:data-[state=checked]:border-white rounded"
@@ -291,19 +298,19 @@ export default function SignupPage() {
                         terms and conditions
                       </Link>
                     </Label>
-                  </div>
+                  </div> */}
                   {errors.terms && <p className="text-sm text-red-500 mt-1">{errors.terms.message}</p>}
                 </CardContent>
 
                 <CardFooter className="flex flex-col space-y-6 pt-4">
-                  <Button
+                <Button
                     type="submit"
                     className="w-full h-12 bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200 rounded-lg shadow-md flex items-center justify-center gap-2 transition-all"
                     disabled={isLoading}
                   >
                     {isLoading ? "Creating account..." : "Create account"}
                     {!isLoading && <ArrowRight className="h-4 w-4" />}
-                  </Button>
+                </Button>
                   <p className="text-center text-sm text-gray-600 dark:text-gray-400">
                     Already have an account?{" "}
                     <Link
