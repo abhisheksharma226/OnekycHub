@@ -1,6 +1,6 @@
 const express = require("express");
 const User = require("../models/User");
-// const Institution = require("../models/Institution");
+const Institution = require("../models/Institution");
 const router = express.Router(); 
 
 
@@ -40,6 +40,43 @@ router.post("/signup", async (req, res) => {
       res.status(500).json({ message: "Server error. Please try again later." });
     }
   });
+
+
+  router.post("/register-institution", async (req, res) => {
+    try {
+      const { name, registrationId, email, password } = req.body;
+  
+      // Validate required fields
+      if (!name || !registrationId || !email || !password) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
+  
+  
+      // Check if the email is already registered
+      const existingInstitution = await Institution.findOne({ email });
+      if (existingInstitution) {
+        return res.status(400).json({ message: "Email already in use" });
+      }
+  
+      // Check if the registration ID is already used
+      const existingRegistrationId = await Institution.findOne({ registrationId });
+      if (existingRegistrationId) {
+        return res.status(400).json({ message: "Registration ID already in use" });
+      }
+  
+      
+      // Create a new institution
+      const newInstitution = new Institution({ name, registrationId, email, password });
+      await newInstitution.save();
+  
+      // Respond with success
+      res.status(201).json({ message: "Institution registered successfully!" });
+    } catch (error) {
+      console.error("Error in register-institution:", error.message);
+      res.status(500).json({ message: "Server error. Please try again later." });
+    }
+  });
+  
   
 
   module.exports = router;

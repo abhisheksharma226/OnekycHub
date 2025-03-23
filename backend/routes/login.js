@@ -11,6 +11,9 @@ const JWT_SECRET = process.env.JWT_SECRET;
 router.post("/login", async (req, res) => {
   const { email, password, loginType } = req.body;
 
+console.log("Active tab:", loginType);
+
+
   try {
     let model;
     switch (loginType) {
@@ -29,6 +32,7 @@ router.post("/login", async (req, res) => {
 
     // Find user in the relevant collection
     const account = await model.findOne({ email });
+    // console.log("Account:", account);
     if (!account) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
