@@ -77,6 +77,44 @@ export default function SignupPage() {
     }
 };
 
+
+const onInstitutionSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  event.preventDefault(); // Prevent default form submission behavior
+  console.log("Submit button clicked");
+
+  const institutionData = {
+    name: (document.getElementById("name") as HTMLInputElement)?.value,
+    registrationId: (document.getElementById("registrationId") as HTMLInputElement)?.value,
+    email: (document.getElementById("email") as HTMLInputElement)?.value,
+    password: (document.getElementById("password") as HTMLInputElement)?.value,
+  };
+
+  console.log("Institution Data: ", institutionData);
+
+  try {
+    const response = await fetch(`http://localhost:8000/api/register-institution`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(institutionData),
+    });
+
+    console.log("API Response Status: ", response.status);
+    // console.log(institutionData)
+
+    if (response.ok) {
+      console.log("Institution registered successfully!");
+      window.location.href = "/login"; // Redirect after successful registration
+    } else {
+      console.error("API Response Error: ", await response.text());
+      setError("Failed to register institution. Please try again.");
+    }
+  } catch (err) {
+    console.error("Network Error: ", err);
+    setError("An error occurred. Please try again later.");
+  }
+};
+
+
 // //auto scroll to first error field
 // const handleInvalid = (errors: any) => {
 //   const firstErrorField = document.querySelector(`[name="${Object.keys(errors)[0]}"]`);
@@ -326,105 +364,102 @@ export default function SignupPage() {
           </TabsContent>
 
           <TabsContent value="institution">
-            <Card className="border-gray-200 dark:border-gray-800 bg-white dark:bg-black shadow-xl">
-              <CardHeader className="pb-8">
-                <CardTitle className="text-2xl">Register Institution</CardTitle>
-                <CardDescription className="text-gray-600 dark:text-gray-400 mt-2">
-                  Enter your information to register your financial institution
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="institution-name" className="text-sm font-medium">
-                    Institution Name
-                  </Label>
-                  <Input
-                    id="institution-name"
-                    className="h-12 pl-4 pr-4 border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900 rounded-lg focus:ring-2 focus:ring-black dark:focus:ring-white focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-black"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="institution-id" className="text-sm font-medium">
-                    Registration ID
-                  </Label>
-                  <Input
-                    id="institution-id"
-                    placeholder="Business registration number"
-                    className="h-12 pl-4 pr-4 border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900 rounded-lg focus:ring-2 focus:ring-black dark:focus:ring-white focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-black"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="institution-email" className="text-sm font-medium">
-                    Business Email
-                  </Label>
-                  <Input
-                    id="institution-email"
-                    type="email"
-                    placeholder="contact@institution.com"
-                    className="h-12 pl-4 pr-4 border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900 rounded-lg focus:ring-2 focus:ring-black dark:focus:ring-white focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-black"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="institution-password" className="text-sm font-medium">
-                    Password
-                  </Label>
-                  <div className="relative">
-                    <Input
-                      id="institution-password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="••••••••"
-                      className="h-12 pl-4 pr-12 border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900 rounded-lg focus:ring-2 focus:ring-black dark:focus:ring-white focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-black"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="absolute right-0 top-0 h-full px-3 text-gray-500"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                      <span className="sr-only">{showPassword ? "Hide password" : "Show password"}</span>
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-2 pt-2">
-                  <Checkbox
-                    id="institution-terms"
-                    className="h-5 w-5 border-gray-300 dark:border-gray-700 data-[state=checked]:bg-black data-[state=checked]:border-black dark:data-[state=checked]:bg-white dark:data-[state=checked]:border-white rounded"
-                  />
-                  <Label htmlFor="institution-terms" className="text-sm">
-                    I agree to the{" "}
-                    <Link
-                      href="/terms"
-                      className="text-black font-medium hover:text-gray-600 dark:text-white dark:hover:text-gray-300 underline-offset-4 hover:underline"
-                    >
-                      terms and conditions
-                    </Link>
-                  </Label>
-                </div>
-              </CardContent>
-
-              <CardFooter className="flex flex-col space-y-6 pt-4">
-                <Button className="w-full h-12 bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200 rounded-lg shadow-md flex items-center justify-center gap-2 transition-all">
-                  Register Institution
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-                <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-                  Already registered?{" "}
-                  <Link
-                    href="/login"
-                    className="text-black font-medium hover:text-gray-600 dark:text-white dark:hover:text-gray-300 underline-offset-4 hover:underline"
-                  >
-                    Sign in
-                  </Link>
-                </p>
-              </CardFooter>
-            </Card>
-          </TabsContent>
+  <form onSubmit={onInstitutionSubmit}>
+    <Card className="border-gray-200 dark:border-gray-800 bg-white dark:bg-black shadow-xl">
+      <CardHeader className="pb-8">
+        <CardTitle className="text-2xl">Register Institution</CardTitle>
+        <CardDescription className="text-gray-600 dark:text-gray-400 mt-2">
+          Enter your information to register your financial institution
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="space-y-2">
+          <Label htmlFor="institution-name" className="text-sm font-medium">
+            Institution Name
+          </Label>
+          <Input
+            id="name"
+            className="h-12 pl-4 pr-4 border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900 rounded-lg focus:ring-2 focus:ring-black dark:focus:ring-white focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-black"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="institution-id" className="text-sm font-medium">
+            Registration ID
+          </Label>
+          <Input
+            id="registrationId"
+            placeholder="Business registration number"
+            className="h-12 pl-4 pr-4 border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900 rounded-lg focus:ring-2 focus:ring-black dark:focus:ring-white focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-black"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="institution-email" className="text-sm font-medium">
+            Business Email
+          </Label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="contact@institution.com"
+            className="h-12 pl-4 pr-4 border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900 rounded-lg focus:ring-2 focus:ring-black dark:focus:ring-white focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-black"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="institution-password" className="text-sm font-medium">
+            Password
+          </Label>
+          <div className="relative">
+            <Input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="••••••••"
+              className="h-12 pl-4 pr-12 border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900 rounded-lg focus:ring-2 focus:ring-black dark:focus:ring-white focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-black"
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="absolute right-0 top-0 h-full px-3 text-gray-500"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              <span className="sr-only">{showPassword ? "Hide password" : "Show password"}</span>
+            </Button>
+          </div>
+        </div>
+        <div className="flex items-center space-x-2 pt-2">
+          <Checkbox
+            id="institution-terms"
+            className="h-5 w-5 border-gray-300 dark:border-gray-700 data-[state=checked]:bg-black data-[state=checked]:border-black dark:data-[state=checked]:bg-white dark:data-[state=checked]:border-white rounded"
+          />
+          <Label htmlFor="institution-terms" className="text-sm">
+            I agree to the{" "}
+            <Link
+              href="/terms"
+              className="text-black font-medium hover:text-gray-600 dark:text-white dark:hover:text-gray-300 underline-offset-4 hover:underline"
+            >
+              terms and conditions
+            </Link>
+          </Label>
+        </div>
+      </CardContent>
+      <CardFooter className="flex flex-col space-y-6 pt-4">
+        <Button type="submit" className="w-full h-12 bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200 rounded-lg shadow-md flex items-center justify-center gap-2 transition-all">
+          Register Institution
+          <ArrowRight className="h-4 w-4" />
+        </Button>
+        <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+          Already registered?{" "}
+          <Link
+            href="/login"
+            className="text-black font-medium hover:text-gray-600 dark:text-white dark:hover:text-gray-300 underline-offset-4 hover:underline"
+          >
+            Sign in
+          </Link>
+        </p>
+      </CardFooter>
+    </Card>
+  </form>
+</TabsContent>;
         </Tabs>
       </div>
 
