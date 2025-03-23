@@ -1,5 +1,7 @@
 "use client"
 
+import CONFIG from "../../utils/config";
+
 import { useState } from "react"
 import Link from "next/link"
 import { Shield, Eye, EyeOff, ArrowRight, Check } from "lucide-react"
@@ -62,7 +64,7 @@ export default function SignupPage() {
 
   const onSubmit = async (data: any) => {
     try {
-        const response = await fetch(`http://localhost:8000/api/signup`, {
+        const response = await fetch(`${CONFIG.BASE_URL}/signup`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data),
@@ -92,7 +94,7 @@ const onInstitutionSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
   console.log("Institution Data: ", institutionData);
 
   try {
-    const response = await fetch(`http://localhost:8000/api/register-institution`, {
+    const response = await fetch(`${CONFIG.BASE_URL}/register-institution`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(institutionData),

@@ -14,6 +14,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
+import CONFIG from "../../utils/config"
+
 // Define a schema for validation (shared for all tabs)
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -40,7 +42,7 @@ export default function LoginPage() {
 
     try {
       // Replace this with your actual backend API URL
-      const apiUrl = "http://localhost:8000/api/login"
+      const apiUrl = `${CONFIG.BASE_URL}/login`
 
       // Make API request
       const response = await fetch(apiUrl, {
