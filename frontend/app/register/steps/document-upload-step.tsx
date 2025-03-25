@@ -86,7 +86,7 @@ export default function DocumentUploadStep({ formData, updateFormData }) {
             <SelectContent>
               <SelectItem value="passport">Passport</SelectItem>
               <SelectItem value="drivingLicense">Driving License</SelectItem>
-              <SelectItem value="nationalId">National ID Card</SelectItem>
+              <SelectItem value="aadharcard">Aadhar Card</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -129,7 +129,7 @@ export default function DocumentUploadStep({ formData, updateFormData }) {
               ? "passport"
               : formData.idDocumentType === "drivingLicense"
                 ? "driving license"
-                : "national ID card"}
+                : "aadhar card"}
             .
           </p>
         </div>
@@ -167,7 +167,7 @@ export default function DocumentUploadStep({ formData, updateFormData }) {
             </CardContent>
           </Card>
           <p className="text-sm text-muted-foreground">
-            Upload a utility bill, bank statement, or government letter (issued within the last 3 months).
+            Upload a utility bill, or government letter (issued within the last 3 months).
           </p>
         </div>
 

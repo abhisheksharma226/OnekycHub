@@ -105,7 +105,25 @@ export default function DocumentUploadPage() {
 
       </Alert>
 
-      <div>
+
+
+<div>
+  <h2 className="text-2xl font-bold tracking-tight">Your Verification is Just a Step Away</h2>
+  <p className="text-muted-foreground mt-2">
+    • Provide your KYC documents to comply with regulations and enjoy faster approvals.
+  </p>
+  <p className="text-muted-foreground mt-2">
+    • Your verified profile ensures smooth transactions and complete peace of mind.
+  </p>
+  <p className="text-muted-foreground mt-2">
+    • Upload your KYC documents now for a trusted and secure experience.
+  </p>
+</div>
+
+
+
+
+      {/* <div>
         <h2 className="text-2xl font-bold tracking-tight">Upload KYC Documents</h2>
         <p className="text-muted-foreground">Please upload the required documents for KYC verification</p>
       </div>
@@ -128,14 +146,14 @@ export default function DocumentUploadPage() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="id-type">ID Type</Label>
-                <Select defaultValue="passport">
+                <Select defaultValue="pancard">
                   <SelectTrigger>
                     <SelectValue placeholder="Select ID type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="passport">Passport</SelectItem>
-                    <SelectItem value="drivers-license">Driver's License</SelectItem>
-                    <SelectItem value="national-id">National ID Card</SelectItem>
+                    <SelectItem value="pancard">Pan card</SelectItem>
+                    <SelectItem value="rationcard">Ration Card</SelectItem>
+                    <SelectItem value="employee/student id">Employee/Student ID</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -235,12 +253,11 @@ export default function DocumentUploadPage() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="address-type">Document Type</Label>
-                <Select defaultValue="utility">
+                <Select defaultValue="bank">
                   <SelectTrigger>
                     <SelectValue placeholder="Select document type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="utility">Utility Bill</SelectItem>
                     <SelectItem value="bank">Bank Statement</SelectItem>
                     <SelectItem value="tax">Tax Document</SelectItem>
                     <SelectItem value="rental">Rental Agreement</SelectItem>
@@ -364,7 +381,6 @@ export default function DocumentUploadPage() {
                     <SelectItem value="payslip">Payslip</SelectItem>
                     <SelectItem value="tax-return">Tax Return</SelectItem>
                     <SelectItem value="employment">Employment Contract</SelectItem>
-                    <SelectItem value="bank">Bank Statement</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -453,7 +469,7 @@ export default function DocumentUploadPage() {
             </CardFooter>
           </Card>
         </TabsContent>
-      </Tabs>
+      </Tabs> */}
     </div>
   )
 }
