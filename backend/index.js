@@ -7,20 +7,25 @@ const connectToMongoDB = require('./db/db');
 const loginRoutes = require('./routes/login');
 const singupRoutes = require('./routes/singup')
 const dashboardRoutes = require('./routes/dashboard');
-
-
+const registerRoutes = require('./routes/register');
 
 // Middleware
 app.use(express.json());
 app.use(cors());
 const path = require('path');
+app.use(express.urlencoded({ extended: true }));
 
 // Connect to MongoDB
 connectToMongoDB();
 
+// Serve uploaded files
+app.use("/uploads", express.static("uploads"));
+
+
 app.use('/api/', loginRoutes);
 app.use('/api/', singupRoutes);
-app.use('/api', dashboardRoutes);
+app.use('/api/', dashboardRoutes);
+app.use("/api", registerRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hi From Onekyc Backend');
