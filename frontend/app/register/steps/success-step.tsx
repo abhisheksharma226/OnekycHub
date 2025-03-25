@@ -1,12 +1,19 @@
 import { CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 
 export default function SuccessStep() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const email = searchParams.get("email") // Extract email from the URL parameters
 
   const handleGoToDashboard = () => {
-    router.push("/dashboard") // Replace '/dashboard' with the actual dashboard route if different
+    if (email) {
+      router.push(`/dashboard/user/?email=${encodeURIComponent(email)}`)
+    } else {
+      // Fallback in case the email parameter is missing
+      router.push("/dashboard")
+    }
   }
 
   return (

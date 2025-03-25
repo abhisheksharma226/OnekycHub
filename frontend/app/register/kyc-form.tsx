@@ -1,31 +1,33 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Check, ChevronRight, Loader2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import PersonalInfoStep from "./steps/personal-info-step"
-import ContactInfoStep from "./steps/contact-info-step"
-import DocumentUploadStep from "./steps/document-upload-step"
-import ReviewStep from "./steps/review-step"
-import SuccessStep from "./steps/success-step"
+import { useState } from "react";
+import { Check, ChevronRight, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import PersonalInfoStep from "./steps/personal-info-step";
+import ContactInfoStep from "./steps/contact-info-step";
+import DocumentUploadStep from "./steps/document-upload-step";
+import ReviewStep from "./steps/review-step";
+import SuccessStep from "./steps/success-step";
+import axios from "axios";
+import CONFIG from "../../utils/config";
 
 type FormData = {
-  firstName: string
-  lastName: string
-  dateOfBirth: Date | undefined
-  nationality: string
-  address: string
-  city: string
-  postalCode: string
-  country: string
-  email: string
-  phone: string
-  idDocument: File | null
-  idDocumentType: string
-  addressProof: File | null
-  selfie: File | null
-}
+  firstName: string;
+  lastName: string;
+  dateOfBirth: Date | undefined;
+  nationality: string;
+  address: string;
+  city: string;
+  postalCode: string;
+  country: string;
+  email: string;
+  phone: string;
+  idDocument: File | null;
+  idDocumentType: string;
+  addressProof: File | null;
+  selfie: File | null;
+};
 
 const initialFormData: FormData = {
   firstName: "",
@@ -42,12 +44,12 @@ const initialFormData: FormData = {
   idDocumentType: "passport",
   addressProof: null,
   selfie: null,
-}
+};
 
 export default function KycForm() {
-  const [currentStep, setCurrentStep] = useState(0)
-  const [formData, setFormData] = useState<FormData>(initialFormData)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [currentStep, setCurrentStep] = useState(0);
+  const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const steps = [
     { name: "Personal Information", component: PersonalInfoStep },
@@ -55,32 +57,69 @@ export default function KycForm() {
     { name: "Document Upload", component: DocumentUploadStep },
     { name: "Review", component: ReviewStep },
     { name: "Success", component: SuccessStep },
-  ]
+  ];
 
   const handleNext = () => {
-    setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1))
-  }
+    setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
+  };
 
   const handleBack = () => {
-    setCurrentStep((prev) => Math.max(prev - 1, 0))
-  }
+    setCurrentStep((prev) => Math.max(prev - 1, 0));
+  };
 
   const handleSubmit = async () => {
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    try {
+      const formDataToSubmit = new FormData();
 
-    // Move to success step
-    setCurrentStep(4)
-    setIsSubmitting(false)
-  }
+      // Append metadata fields
+      formDataToSubmit.append("firstName", formData.firstName);
+      formDataToSubmit.append("lastName", formData.lastName);
+      formDataToSubmit.append("dateOfBirth", formData.dateOfBirth?.toISOString() || "");
+      formDataToSubmit.append("nationality", formData.nationality);
+      formDataToSubmit.append("address", formData.address);
+      formDataToSubmit.append("city", formData.city);
+      formDataToSubmit.append("postalCode", formData.postalCode);
+      formDataToSubmit.append("country", formData.country);
+      formDataToSubmit.append("email", formData.email);
+      formDataToSubmit.append("phone", formData.phone);
+      formDataToSubmit.append("idDocumentType", formData.idDocumentType);
+
+      // Append file uploads
+      if (formData.idDocument) {
+        formDataToSubmit.append("idDocument", formData.idDocument);
+      }
+      if (formData.addressProof) {
+        formDataToSubmit.append("addressProof", formData.addressProof);
+      }
+      if (formData.selfie) {
+        formDataToSubmit.append("selfie", formData.selfie);
+      }
+
+      // Make the API request
+      const response = await axios.post(`${CONFIG.BASE_URL}/register`, formDataToSubmit, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      console.log("Response:", response.data);
+
+      // Move to success step
+      setCurrentStep(4);
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      alert("There was an error submitting your application.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const updateFormData = (data: Partial<FormData>) => {
-    setFormData((prev) => ({ ...prev, ...data }))
-  }
+    setFormData((prev) => ({ ...prev, ...data }));
+  };
 
-  const CurrentStepComponent = steps[currentStep].component
+  const CurrentStepComponent = steps[currentStep].component;
+
 
   return (
     <div className="space-y-8">

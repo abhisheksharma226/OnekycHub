@@ -66,7 +66,7 @@ export default function LoginPage() {
 
       // Handle success (e.g., save token, redirect)
       console.log("Login successful:", result)
-      window.location.href = `/dashboard/${activeTab}?email=${encodeURIComponent(data.email)}` // Redirect based on user type
+      window.location.href = `/dashboard/${activeTab}/?email=${encodeURIComponent(data.email)}` // Redirect based on user type
     } catch (err: any) {
       setError(err.message || "Something went wrong. Please try again.")
     } finally {

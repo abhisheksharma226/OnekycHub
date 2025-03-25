@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { FileText, Upload, X, CheckCircle, AlertCircle } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -19,6 +19,8 @@ import Link from "next/link";
 
 export default function DocumentUploadPage() {
   const router = useRouter()
+  const searchParams = useSearchParams() // Get search params from URL
+  const email = searchParams.get("email") // Extract the email from the URL
   const [activeTab, setActiveTab] = useState("id")
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
@@ -91,13 +93,16 @@ export default function DocumentUploadPage() {
         <AlertTitle className="text-lg font-semibold">Share your details to unlock full access.</AlertTitle>
 
         <div className="flex items-center gap-2 mt-4">
-          <Link href="/register">
-            <Button>
-              <Upload className="mr-2 h-4 w-4" />
-              Get Verified
-            </Button>
-          </Link>
+        <Link
+            href={`/register?email=${encodeURIComponent(email || "")}`}
+          >
+          <Button>
+            <Upload className="mr-2 h-4 w-4" />
+            Get Verified
+          </Button>
+        </Link>
         </div>
+
       </Alert>
 
       <div>

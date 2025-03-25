@@ -20,6 +20,7 @@ export default function DashboardPage() {
 
   interface UserData {
     firstName: string;
+    email: string;
     verificationStatus: string;
     submittedDocuments: string[];
     institutions: string[];
@@ -40,7 +41,7 @@ export default function DashboardPage() {
           return;
         }
 
-        const response = await fetch(`${CONFIG.BASE_URL}/dashboard/user?email=${(email)}`);
+        const response = await fetch(`${CONFIG.BASE_URL}/dashboard/user/?email=${(email)}`);
         console.log("Fetch response status:", response.status);
 
         if (response.ok) {
@@ -80,19 +81,26 @@ export default function DashboardPage() {
   return (
     <div className="w-full max-w-screen-xl mx-auto space-y-6 px-4 lg:px-8">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Welcome back, {userData?.firstName || "User"}</h2>
-          <p className="text-muted-foreground">Here's an overview of your KYC verification status.</p>
+          <div>
+                <h2 className="text-2xl font-bold tracking-tight">
+                  Welcome back, {userData?.firstName || "User"}
+                </h2>
+                <p className="text-muted-foreground">
+                  Here's an overview of your KYC verification status.
+                </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Link
+              href={`/dashboard/user/documents/upload/?email=${encodeURIComponent(userData?.email || "")}`}
+            >
+              <Button>
+                <Upload className="mr-2 h-4 w-4" />
+                Get Verified
+              </Button>
+            </Link>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Link href="/dashboard/user/documents/upload">
-            <Button>
-              <Upload className="mr-2 h-4 w-4" />
-              Get Verified
-            </Button>
-          </Link>
-        </div>
-      </div>
+
 
       <Alert>
         <AlertCircle className="h-4 w-4" />
