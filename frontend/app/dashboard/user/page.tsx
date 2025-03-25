@@ -1,3 +1,5 @@
+"use client"; 
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -7,19 +9,86 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertCircle, CheckCircle, Clock, FileText, Upload, Building, Shield } from "lucide-react";
 import Link from "next/link";
 
+import CONFIG from "../../../utils/config";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+
+
 export default function DashboardPage() {
+  const searchParams = useSearchParams();
+  const email = searchParams.get("email"); // Extract email from URL
+
+  interface UserData {
+    firstName: string;
+    verificationStatus: string;
+    submittedDocuments: string[];
+    institutions: string[];
+    securityScore: number;
+  }
+
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (!email) {
+          console.error("Email is missing in the URL params.");
+          setError("Email parameter is missing.");
+          setIsLoading(false);
+          return;
+        }
+
+        const response = await fetch(`${CONFIG.BASE_URL}/dashboard/user?email=${(email)}`);
+        console.log("Fetch response status:", response.status);
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Fetched user data:", data);
+          setUserData(data);
+          setError(null); // Clear any previous errors
+        } else {
+          const errorText = await response.text();
+          console.error("API Error:", errorText);
+          setError("Failed to fetch user data.");
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        setError("An unexpected error occurred.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [email]);
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return (
+      <Alert variant="destructive">
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
+    );
+  }
+
   return (
     <div className="w-full max-w-screen-xl mx-auto space-y-6 px-4 lg:px-8">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Welcome back, John!</h2>
+          <h2 className="text-2xl font-bold tracking-tight">Welcome back, {userData?.firstName || "User"}</h2>
           <p className="text-muted-foreground">Here's an overview of your KYC verification status.</p>
         </div>
         <div className="flex items-center gap-2">
-          <Link href="/dashboard/documents/upload">
+          <Link href="/dashboard/user/documents/upload">
             <Button>
               <Upload className="mr-2 h-4 w-4" />
-              Upload Documents
+              Get Verified
             </Button>
           </Link>
         </div>

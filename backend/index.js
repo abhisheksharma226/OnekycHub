@@ -20,7 +20,7 @@ connectToMongoDB();
 
 app.use('/api/', loginRoutes);
 app.use('/api/', singupRoutes);
-app.use('/api/', dashboardRoutes);
+app.use('/api', dashboardRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hi From Onekyc Backend');

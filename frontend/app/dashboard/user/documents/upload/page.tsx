@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Progress } from "@/components/ui/progress"
+import Link from "next/link";
 
 export default function DocumentUploadPage() {
   const router = useRouter()
@@ -82,17 +83,27 @@ export default function DocumentUploadPage() {
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
+        <h2 className="text-2xl font-bold tracking-tight">Keep Your Information Up-to-Date</h2>
+        <p className="text-muted-foreground">Make sure your personal details are accurate for a seamless experience.</p>
+      </div>
+
+      <Alert className="flex flex-col items-center justify-center text-center p-6">
+        <AlertTitle className="text-lg font-semibold">Share your details to unlock full access.</AlertTitle>
+
+        <div className="flex items-center gap-2 mt-4">
+          <Link href="/register">
+            <Button>
+              <Upload className="mr-2 h-4 w-4" />
+              Get Verified
+            </Button>
+          </Link>
+        </div>
+      </Alert>
+
+      <div>
         <h2 className="text-2xl font-bold tracking-tight">Upload KYC Documents</h2>
         <p className="text-muted-foreground">Please upload the required documents for KYC verification</p>
       </div>
-
-      <Alert>
-        <AlertCircle className="h-4 w-4" />
-        <AlertTitle>Important</AlertTitle>
-        <AlertDescription>
-          All documents must be clear, legible, and not expired. We accept JPG, PNG, and PDF formats up to 5MB.
-        </AlertDescription>
-      </Alert>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-3">
