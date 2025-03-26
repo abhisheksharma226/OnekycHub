@@ -77,7 +77,37 @@ router.post("/signup", async (req, res) => {
       res.status(500).json({ message: "Server error. Please try again later." });
     }
   });
+
+
+  router.delete("/delete-user", async (req, res) => {
+    const { email } = req.body;
   
+    if (!email) {
+      return res.status(400).json({ message: "Email is required to delete the account." });
+    }
   
+    try {
+      // Delete user from Signup and Registration schemas
+      const deletedSignup = await User.findOneAndDelete({ email });
+      const deletedRegistration = await userRegistration.findOneAndDelete({ email });
+  
+      if (!deletedSignup && !deletedRegistration) {
+        return res.status(404).json({ message: "No account found with this email." });
+      }
+  
+      res.status(200).json({
+        message: "Account successfully deleted from all schemas.",
+        deleted: {
+          User: !!deletedSignup,
+          userRegistration: !!deletedRegistration,
+        },
+      });
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      res.status(500).json({ message: "An error occurred while deleting the account." });
+    }
+  });
+  
+ 
 
   module.exports = router;
