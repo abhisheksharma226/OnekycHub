@@ -44,9 +44,14 @@ console.log("Active tab:", loginType);
     }
 
     // Generate a JWT token
-    const token = jwt.sign({ id: account._id, type: loginType }, JWT_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign(
+      { email: account.email, id: account._id }, // Payload
+        process.env.JWT_SECRET, // Secret key
+      { expiresIn: "1hr" } // Token expiry
+    );
+    console.log("Generated Token:", token); // Debug generated token
 
-    res.status(200).json({ message: "Login successful", token });
+    res.status(200).json({ message: "Login successful",email: account.email, token });
   } catch (error) {
     console.error("Login error:", error);
     res.status(500).json({ message: "Internal server error" });

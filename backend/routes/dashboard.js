@@ -1,10 +1,12 @@
 const express = require("express");
 const User = require("../models/User");
 const userRegistration = require("../models/userRegistration");
+const {authenticateToken } = require("../middleware/Authorization");
+
 const router = express.Router();
 
 // Route to get user data by email
-router.get("/dashboard/user", async (req, res) => {
+router.get("/dashboard/user", authenticateToken, async (req, res) => {
   const { email } = req.query; // Extract email from query parameters
 
   if (!email) {
@@ -17,8 +19,14 @@ router.get("/dashboard/user", async (req, res) => {
     const userRegistrationDetails = await userRegistration.findOne({ email });
 
     if (userRegistrationDetails) {
+
+      
       // If the email exists in UserDetails, prioritize this data
       return res.status(200).json({
+        
+        token: req.headers.authorization.split(" ")[1], // Send token back
+
+
         userId: userRegistrationDetails._id,
         firstName: userRegistrationDetails.firstName || "N/A",
         lastName: userRegistrationDetails.lastName || "N/A",
