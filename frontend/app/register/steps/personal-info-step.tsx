@@ -1,15 +1,16 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Calendar } from "@/components/ui/calendar"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
-import { CalendarIcon } from "lucide-react"
-import { format } from "date-fns"
-import { cn } from "@/lib/utils"
+import { useEffect, useState } from "react";
+import { Calendar } from "@/components/ui/calendar";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import CONFIG from "@/utils/config";
 
 const countries = [
   "United States",
@@ -22,7 +23,7 @@ const countries = [
   "India",
   "Brazil",
   "South Africa",
-]
+];
 
 export default function PersonalInfoStep({ formData, updateFormData }) {
   const [errors, setErrors] = useState({
@@ -34,51 +35,86 @@ export default function PersonalInfoStep({ formData, updateFormData }) {
     city: "",
     postalCode: "",
     country: "",
-  })
+  });
+
+  useEffect(() => {
+    // Fetch token and email from localStorage
+    const token = localStorage.getItem("token");
+    const email = localStorage.getItem("email");
+
+    if (email) {
+      // Simulate an API call to fetch user details based on the email
+      const fetchUserDetails = async () => {
+        try {
+          const response = await fetch(`${CONFIG.BASE_URL}/dashboard/user?email=${email}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (response.ok) {
+            const userData = await response.json();
+            // Update the form data with the fetched user details
+            updateFormData({
+              firstName: userData.firstName,
+              lastName: userData.lastName,
+              email: userData.email,
+            });
+          } else {
+            console.error("Failed to fetch user details.");
+          }
+        } catch (error) {
+          console.error("Error fetching user details:", error);
+        }
+      };
+
+      fetchUserDetails();
+    }
+  }, [updateFormData]);
 
   const validateField = (name, value) => {
     if (!value && name !== "dateOfBirth") {
-      return `${name.charAt(0).toUpperCase() + name.slice(1).replace(/([A-Z])/g, " $1")} is required`
+      return `${name.charAt(0).toUpperCase() + name.slice(1).replace(/([A-Z])/g, " $1")} is required`;
     }
     if (name === "dateOfBirth" && !value) {
-      return "Date of birth is required"
+      return "Date of birth is required";
     }
-    return ""
-  }
+    return "";
+  };
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    const error = validateField(name, value)
+    const { name, value } = e.target;
+    const error = validateField(name, value);
 
     setErrors((prev) => ({
       ...prev,
       [name]: error,
-    }))
+    }));
 
-    updateFormData({ [name]: value })
-  }
+    updateFormData({ [name]: value });
+  };
 
   const handleDateChange = (date) => {
-    const error = validateField("dateOfBirth", date)
+    const error = validateField("dateOfBirth", date);
 
     setErrors((prev) => ({
       ...prev,
       dateOfBirth: error,
-    }))
+    }));
 
-    updateFormData({ dateOfBirth: date })
-  }
+    updateFormData({ dateOfBirth: date });
+  };
 
   const handleSelectChange = (name, value) => {
-    const error = validateField(name, value)
+    const error = validateField(name, value);
 
     setErrors((prev) => ({
       ...prev,
       [name]: error,
-    }))
+    }));
 
-    updateFormData({ [name]: value })
-  }
+    updateFormData({ [name]: value });
+  };
 
   return (
     <div className="space-y-6">
@@ -95,8 +131,8 @@ export default function PersonalInfoStep({ formData, updateFormData }) {
           <Input
             id="firstName"
             name="firstName"
-            value={formData.firstName}
-            onChange={handleChange}
+            value={formData.firstName || ""}
+            readOnly
             placeholder="Enter your first name"
           />
           {errors.firstName && <p className="text-sm text-red-500">{errors.firstName}</p>}
@@ -107,8 +143,8 @@ export default function PersonalInfoStep({ formData, updateFormData }) {
           <Input
             id="lastName"
             name="lastName"
-            value={formData.lastName}
-            onChange={handleChange}
+            value={formData.lastName || ""}
+            readOnly
             placeholder="Enter your last name"
           />
           {errors.lastName && <p className="text-sm text-red-500">{errors.lastName}</p>}

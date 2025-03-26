@@ -51,7 +51,7 @@ export default function DashboardPage() {
 // Calculate progress and status based on the mock data
 const uploadedDocsCount =
   userData?.submittedDocuments?.filter((doc) => doc.url).length || 0;
-const isVerified = userData?.isVerified || true; // Mock data for verification status
+const isVerified = userData?.isVerified || false; // Mock data for verification status
 const isConfirmed = userData?.isConfirmed || false; // Mock data for confirmation email status
 
 // Calculate percentage

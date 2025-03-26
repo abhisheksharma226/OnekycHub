@@ -1,48 +1,56 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { useEffect, useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function ContactInfoStep({ formData, updateFormData }) {
   const [errors, setErrors] = useState({
     email: "",
     phone: "",
-  })
+  });
+
+  useEffect(() => {
+    // Fetch email from localStorage only once
+    const email = localStorage.getItem("email");
+    if (email && formData.email !== email) {
+      updateFormData({ email }); // Only update if email is different
+    }
+  }, [formData.email, updateFormData]); // Add `formData.email` and `updateFormData` to dependencies
 
   const validateField = (name, value) => {
     if (!value) {
-      return `${name.charAt(0).toUpperCase() + name.slice(1)} is required`
+      return `${name.charAt(0).toUpperCase() + name.slice(1)} is required`;
     }
 
     if (name === "email") {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(value)) {
-        return "Please enter a valid email address"
+        return "Please enter a valid email address";
       }
     }
 
     if (name === "phone") {
-      const phoneRegex = /^\+?[0-9\s\-()]{8,20}$/
+      const phoneRegex = /^\+?[0-9\s\-()]{8,20}$/;
       if (!phoneRegex.test(value)) {
-        return "Please enter a valid phone number"
+        return "Please enter a valid phone number";
       }
     }
 
-    return ""
-  }
+    return "";
+  };
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    const error = validateField(name, value)
+    const { name, value } = e.target;
+    const error = validateField(name, value);
 
     setErrors((prev) => ({
       ...prev,
       [name]: error,
-    }))
+    }));
 
-    updateFormData({ [name]: value })
-  }
+    updateFormData({ [name]: value });
+  };
 
   return (
     <div className="space-y-6">
@@ -57,13 +65,12 @@ export default function ContactInfoStep({ formData, updateFormData }) {
         <div className="space-y-2">
           <Label htmlFor="email">Email Address</Label>
           <Input
-            id="email"
-            name="email"
-            type="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="Enter your email address"
-          />
+          id="email"
+          name="email"
+          value={formData.email || ""}
+          readOnly
+          placeholder="Enter your email"
+        />
           {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
           <p className="text-sm text-muted-foreground">We'll send verification updates to this email address.</p>
         </div>
