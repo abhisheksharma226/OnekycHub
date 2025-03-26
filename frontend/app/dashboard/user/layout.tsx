@@ -99,8 +99,8 @@ export default function DashboardLayout({
               <SidebarGroupContent>
                 <SidebarMenu>
                   <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={pathname === "/dashboard/profile"}>
-                      <Link href="/dashboard/profile">
+                    <SidebarMenuButton asChild isActive={pathname === "/dashboard/user/profile"}>
+                      <Link href="/dashboard/user/profile">
                         <User className="h-4 w-4" />
                         <span>Profile</span>
                       </Link>
@@ -125,6 +125,7 @@ export default function DashboardLayout({
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
+            
           </SidebarContent>
           <SidebarFooter>
             <div className="px-3 py-2">
@@ -170,7 +171,7 @@ export default function DashboardLayout({
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard/profile">
+                    <Link href="/dashboard/user/profile">
                       <User className="mr-2 h-4 w-4" />
                       <span>Profile</span>
                     </Link>
