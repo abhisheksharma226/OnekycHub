@@ -40,6 +40,8 @@ router.get("/dashboard/user", authenticateToken, async (req, res) => {
         city: userRegistrationDetails.city || "N/A",
         postalCode: userRegistrationDetails.postalCode || "N/A",
         country: userRegistrationDetails.country || "N/A",
+        createdAt: userRegistrationDetails.createdAt,
+        updatedAt: userRegistrationDetails.updatedAt,
       });
     } else if (userDetails) {
       // Fallback to userRegistration if email is not found in UserDetails
