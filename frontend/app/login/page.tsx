@@ -64,6 +64,9 @@ export default function LoginPage() {
 
       const result = await response.json()
 
+      localStorage.setItem("token", result.token); // Assuming `token` is returned in the API response
+      localStorage.setItem("email", data.email);
+
       // Handle success (e.g., save token, redirect)
       console.log("Login successful:", result)
       window.location.href = `/dashboard/${activeTab}/?email=${encodeURIComponent(data.email)}` // Redirect based on user type

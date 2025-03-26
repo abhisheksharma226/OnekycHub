@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check, ChevronRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -11,6 +11,8 @@ import ReviewStep from "./steps/review-step";
 import SuccessStep from "./steps/success-step";
 import axios from "axios";
 import CONFIG from "../../utils/config";
+import { jwtDecode } from "jwt-decode";
+import { useRouter } from "next/navigation";
 
 type FormData = {
   firstName: string;
@@ -47,6 +49,7 @@ const initialFormData: FormData = {
 };
 
 export default function KycForm() {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -58,6 +61,33 @@ export default function KycForm() {
     { name: "Review", component: ReviewStep },
     { name: "Success", component: SuccessStep },
   ];
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const email = localStorage.getItem("email");
+
+    if (!token || !email) {
+      // If no token is found, redirect to login
+      router.push("/login");
+      return;
+    }
+
+    try {
+      const decodedToken: { exp: number } = jwtDecode(token);
+      const currentTime = Math.floor(Date.now() / 1000);
+
+      // Check if the token has expired
+      if (decodedToken.exp < currentTime) {
+        localStorage.removeItem("token"); // Remove expired token
+        router.push("/login"); // Redirect to login page
+      }
+    } catch (error) {
+      console.error("Invalid token:", error);
+      localStorage.removeItem("token"); // Clear invalid token
+      router.push("/login"); // Redirect to login page
+    }
+  }, [router]);
+
 
   const handleNext = () => {
     setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
@@ -97,9 +127,18 @@ export default function KycForm() {
         formDataToSubmit.append("selfie", formData.selfie);
       }
 
+
+      // Include token in request headers
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("Unauthorized");
+
+
       // Make the API request
       const response = await axios.post(`${CONFIG.BASE_URL}/register`, formDataToSubmit, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`, // Add token to headers
+        },
       });
 
       console.log("Response:", response.data);

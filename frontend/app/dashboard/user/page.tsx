@@ -88,6 +88,16 @@ const togglePopup = () => setShowPopup(!showPopup);
 
   useEffect(() => {
     const fetchData = async () => {
+
+      const token = localStorage.getItem("token");
+      const email = localStorage.getItem("email");
+
+      // Redirect to login if token or email is missing
+      if (!token || !email) {
+        window.location.href = "/login";
+        return;
+      }
+
       try {
         if (!email) {
           setError("Email parameter is missing.");
@@ -95,9 +105,16 @@ const togglePopup = () => setShowPopup(!showPopup);
           return;
         }
   
-        const response = await fetch(`${CONFIG.BASE_URL}/dashboard/user/?email=${email}`);
+        const response = await fetch(`${CONFIG.BASE_URL}/dashboard/user?email=${email}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        
         if (response.ok) {
           const data = await response.json();
+          setUserData(data); // Save user data
+          setError(null);
           console.log(data);
   
           const mappedData: UserData = {
@@ -134,8 +151,14 @@ const togglePopup = () => setShowPopup(!showPopup);
   
           setUserData(mappedData);
           setError(null);
+        } else if (response.status === 401) {
+          setError("Unauthorized access. Please log in again.");
+          localStorage.removeItem("token");
+          localStorage.removeItem("email");
+          window.location.href = "/login";
         } else {
           setError("Failed to fetch user data.");
+          window.location.href = "/login";
         }
       } catch (error) {
         setError("An unexpected error occurred.");

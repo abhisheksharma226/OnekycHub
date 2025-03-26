@@ -2,9 +2,10 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { FileText, Upload, X, CheckCircle, AlertCircle } from "lucide-react"
+import { jwtDecode } from "jwt-decode";
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -27,60 +28,64 @@ export default function DocumentUploadPage() {
   const [uploadComplete, setUploadComplete] = useState(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setSelectedFile(e.target.files[0])
-      setUploadError(null)
-    }
-  }
 
-  const handleUpload = () => {
-    if (!selectedFile) {
-      setUploadError("Please select a file to upload")
-      return
-    }
 
-    setUploading(true)
-    setUploadProgress(0)
+  useEffect(() => {
+    const checkToken = () => {
+      const token = localStorage.getItem("token");
+      const email = localStorage.getItem("email");
 
-    // Simulate upload progress
-    const interval = setInterval(() => {
-      setUploadProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval)
-          setUploading(false)
-          setUploadComplete(true)
-          return 100
+      if (!token || !email) {
+        // Redirect to login if token or email is missing
+        alert("Session expired. Please log in again.");
+        window.location.href = "/login";
+        return;
+      }
+
+      try {
+        // Decode the token to get the expiration time
+        const decoded: { exp: number } = jwtDecode(token);
+        const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+
+        if (decoded.exp < currentTime) {
+          // Token has expired
+          alert("Session expired. Please log in again.");
+          localStorage.removeItem("token"); // Clear invalid token
+          localStorage.removeItem("email"); // Clear email
+          window.location.href = "/login";
+          return;
         }
-        return prev + 10
-      })
-    }, 300)
+
+        // Token is valid
+        setIsAuthenticated(true);
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        alert("Invalid token. Please log in again.");
+        localStorage.removeItem("token");
+        localStorage.removeItem("email");
+        window.location.href = "/login";
+      }
+    };
+
+    checkToken();
+
+    // Optionally, check token expiration periodically
+    const interval = setInterval(() => {
+      checkToken();
+    }, 5000); // Check every 5 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+  if (!isAuthenticated) {
+    // Optionally, display a loading screen or nothing while authentication is being checked
+    return null;
   }
 
-  const handleContinue = () => {
-    if (activeTab === "id") {
-      setActiveTab("address")
-      setSelectedFile(null)
-      setUploadComplete(false)
-      setUploadProgress(0)
-    } else if (activeTab === "address") {
-      setActiveTab("income")
-      setSelectedFile(null)
-      setUploadComplete(false)
-      setUploadProgress(0)
-    } else {
-      // All documents uploaded, redirect to dashboard
-      router.push("/dashboard")
-    }
-  }
 
-  const handleCancel = () => {
-    setSelectedFile(null)
-    setUploadComplete(false)
-    setUploadProgress(0)
-    setUploadError(null)
-  }
+
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
