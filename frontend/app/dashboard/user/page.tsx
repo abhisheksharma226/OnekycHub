@@ -13,7 +13,6 @@ import CONFIG from "../../../utils/config";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-//Hi
 
 export default function DashboardPage() {
   const searchParams = useSearchParams();
