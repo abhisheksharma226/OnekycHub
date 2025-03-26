@@ -58,4 +58,20 @@ console.log("Active tab:", loginType);
   }
 });
 
+
+router.post("/logout", (req, res) => {
+  try {
+    // Clear cookies
+    res.clearCookie("token", { httpOnly: true, secure: true, sameSite: "strict" });
+
+    // Optionally handle token invalidation (e.g., blacklisting if using JWT)
+    // This can be done via a token store or database.
+
+    res.status(200).json({ message: "Successfully logged out" });
+  } catch (error) {
+    console.error("Logout Error:", error);
+    res.status(500).json({ message: "An error occurred during logout" });
+  }
+});
+
 module.exports = router;
