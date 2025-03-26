@@ -19,8 +19,6 @@ router.get("/dashboard/user", authenticateToken, async (req, res) => {
     const userRegistrationDetails = await userRegistration.findOne({ email });
 
     if (userRegistrationDetails) {
-
-      
       // If the email exists in UserDetails, prioritize this data
       return res.status(200).json({
         
