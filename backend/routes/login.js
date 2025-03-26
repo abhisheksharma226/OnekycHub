@@ -47,7 +47,7 @@ console.log("Active tab:", loginType);
     const token = jwt.sign(
       { email: account.email, id: account._id }, // Payload
         process.env.JWT_SECRET, // Secret key
-      { expiresIn: "1hr" } // Token expiry
+      { expiresIn: "30s" } // Token expiry
     );
     console.log("Generated Token:", token); // Debug generated token
 
