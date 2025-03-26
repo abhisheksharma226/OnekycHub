@@ -1,17 +1,21 @@
-"use client"
+"use client";
 
-import type React from "react"
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Camera } from "lucide-react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Camera } from "lucide-react"
+interface Document {
+  type: string;
+  url: string;
+  status: string; // e.g., "Verified", "Not Uploaded", etc.
+}
 
 interface UserDetailsProps {
-  userData: any
-  isEditing: boolean
-  onUpdate: (data: any) => void
+  userData: any;
+  isEditing: boolean;
+  onUpdate: (data: any) => void;
 }
 
 export function UserDetails({ userData, isEditing, onUpdate }: UserDetailsProps) {
@@ -20,19 +24,23 @@ export function UserDetails({ userData, isEditing, onUpdate }: UserDetailsProps)
     lastName: userData.lastName,
     email: userData.email,
     phone: userData.phone,
-    selfie: userData.selfie,
     nationality: userData.nationality,
     dateOfBirth: userData.dateOfBirth,
     address: userData.address,
     city: userData.city,
     postalCode: userData.postalCode,
     country: userData.country,
-  })
+    idDocument: userData.idDocument,
+    idDocumentType: userData.idDocumentType,
+    addressProof: userData.addressProof,
+    selfie: userData.selfie,
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
 
   const handleSubmit = () => {
     onUpdate({
@@ -40,7 +48,6 @@ export function UserDetails({ userData, isEditing, onUpdate }: UserDetailsProps)
       lastName: formData.lastName,
       email: formData.email,
       phone: formData.phone,
-      selfie: formData.selfie,
       nationality: formData.nationality,
       dateOfBirth: formData.dateOfBirth,
       house: {
@@ -49,8 +56,13 @@ export function UserDetails({ userData, isEditing, onUpdate }: UserDetailsProps)
         postalCode: formData.postalCode,
         country: formData.country,
       },
-    })
-  }
+      idDocument: formData.idDocument,
+      idDocumentType: formData.idDocumentType,
+      addressProof: formData.addressProof,
+      selfie: formData.selfie,
+    });
+  };
+
 
   return (
     <div>

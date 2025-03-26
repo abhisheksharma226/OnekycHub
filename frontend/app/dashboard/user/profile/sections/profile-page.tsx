@@ -38,30 +38,15 @@ export default function ProfilePage() {
 
         const data = await response.json();
 
-        // Map document fields into a structured array
-        const documents = [
-          {
-            type: data.idDocumentType || "ID Document",
-            link: data.idDocument,
-            status: "Verified",
-            lastUpdated: new Date().toLocaleDateString(),
-          },
-          {
-            type: "Address Proof",
-            link: data.addressProof,
-            status: "Verified",
-            lastUpdated: new Date().toLocaleDateString(),
-          },
-          {
-            type: "Selfie",
-            link: data.selfie,
-            status: "Verified",
-            lastUpdated: new Date().toLocaleDateString(),
-          },
-        ];
 
         // Enhance the user data with documents
-        setUserData({ ...data, documents });
+        setUserData({
+          ...data,
+          idDocumentType: data.idDocumentType || "ID Document",
+          idDocument: data.idDocument || null,
+          addressProof: data.addressProof || null,
+          selfie: data.selfie || null,
+        });
       } catch (error: any) {
         setError(error.message || "An error occurred while fetching user data");
       } finally {
@@ -99,14 +84,28 @@ export default function ProfilePage() {
           <hr className="my-6 border-gray-200" />
 
           {/* Documents Section */}
-          <DocumentsSection documents={userData.documents} />
+          <DocumentsSection
+            idDocumentType={userData.idDocumentType}
+            idDocument={userData.idDocument}
+            addressProof={userData.addressProof}
+            selfie={userData.selfie}
+          />
+
 
           <hr className="my-6 border-gray-200" />
 
           {/* Additional Info */}
           <AdditionalInfo
-            accountCreated={new Date().toLocaleDateString()} // Mocked for now
-            lastLogin={new Date().toLocaleString()} // Mocked for now
+            createdAt={new Date(userData.createdAt).toLocaleDateString("en-GB")} // Formats to 'DD/MM/YYYY'
+            updatedAt={new Date(userData.updatedAt).toLocaleString("en-GB", {
+              day: "2-digit",
+              month: "long",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit",
+              hour12: true,
+            })} // Formats to '26 March 2025, 9:15:49 PM'
             consentStatus="Consent Given" // Mocked
             twoFactorEnabled={true} // Mocked
           />

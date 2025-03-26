@@ -2,13 +2,13 @@ import { Badge } from "@/components/ui/badge"
 import { ShieldCheck, ShieldAlert } from "lucide-react"
 
 interface AdditionalInfoProps {
-  accountCreated: string
-  lastLogin: string
+  createdAt: string
+  updatedAt: string
   consentStatus: string
   twoFactorEnabled: boolean
 }
 
-export function AdditionalInfo({ accountCreated, lastLogin, consentStatus, twoFactorEnabled }: AdditionalInfoProps) {
+export function AdditionalInfo({ createdAt, updatedAt, consentStatus, twoFactorEnabled }: AdditionalInfoProps) {
   return (
     <div>
       <h3 className="text-lg font-medium mb-4">Additional Information</h3>
@@ -16,12 +16,12 @@ export function AdditionalInfo({ accountCreated, lastLogin, consentStatus, twoFa
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <p className="text-sm text-gray-500">Account Created</p>
-          <p className="font-medium text-black">{accountCreated}</p>
+          <p className="font-medium text-black">{createdAt}</p>
         </div>
 
         <div>
-          <p className="text-sm text-gray-500">Last Login</p>
-          <p className="font-medium text-black">{lastLogin}</p>
+          <p className="text-sm text-gray-500">Last Update</p>
+          <p className="font-medium text-black">{updatedAt}</p>
         </div>
 
         <div>
