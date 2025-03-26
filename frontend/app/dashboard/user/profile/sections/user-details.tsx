@@ -76,14 +76,14 @@ export function UserDetails({ userData, isEditing, onUpdate }: UserDetailsProps)
                     className="w-full h-full object-cover" 
                   />            
             </div>
-            <Button
+            {/* <Button
               size="icon"
               className="absolute bottom-0 right-0 rounded-full bg-black text-white hover:bg-gray-800"
             >
               <Camera className="h-4 w-4" />
-            </Button>
+            </Button> */}
           </div>
-          <p className="mt-2 text-sm text-gray-500">Upload a profile picture</p>
+          {/* <p className="mt-2 text-sm text-gray-500">Upload a profile picture</p> */}
         </div>
 
         <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -143,7 +143,13 @@ export function UserDetails({ userData, isEditing, onUpdate }: UserDetailsProps)
                 onChange={handleChange}
               />
             ) : (
-              <p className="mt-1 text-black">{userData.dateOfBirth}</p>
+              <p className="mt-1 text-black">
+                {   new Date(userData.dateOfBirth).toLocaleString("en-GB", {
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </p>
             )}
           </div>
         </div>

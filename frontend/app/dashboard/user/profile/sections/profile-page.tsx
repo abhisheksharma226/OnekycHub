@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { UserDetails } from "./user-details";
 import { DocumentsSection } from "./documents-section";
 import { AdditionalInfo } from "./additional-info";
@@ -12,6 +13,7 @@ export default function ProfilePage() {
   const [userData, setUserData] = useState<any>(null); // Initialize user data as null
   const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState<string | null>(null); // Error state
+  const router = useRouter(); // To programmatically redirect
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -20,6 +22,28 @@ export default function ProfilePage() {
     if (!token || !email) {
       setError("User is not authenticated. Please log in.");
       setLoading(false);
+      router.push("/login"); // Redirect to login page
+      return;
+    }
+
+    // Function to check token expiration
+    const isTokenExpired = (token: string) => {
+      try {
+        const decodedToken = JSON.parse(atob(token.split(".")[1])); // Decode the payload
+        const exp = decodedToken.exp; // Extract expiration time
+        const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+        return exp < currentTime; // Return true if the token is expired
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        return true; // Treat as expired if decoding fails
+      }
+    };
+
+    if (isTokenExpired(token)) {
+      setError("Session has expired. Please log in again.");
+      localStorage.removeItem("token"); // Clear token from storage
+      localStorage.removeItem("email");
+      router.push("/login"); // Redirect to login page
       return;
     }
 
@@ -38,7 +62,6 @@ export default function ProfilePage() {
 
         const data = await response.json();
 
-
         // Enhance the user data with documents
         setUserData({
           ...data,
@@ -55,7 +78,7 @@ export default function ProfilePage() {
     };
 
     fetchUserData();
-  }, []);
+  }, [router]);
 
   const handleUpdateProfile = (updatedData: any) => {
     setUserData({ ...userData, ...updatedData });

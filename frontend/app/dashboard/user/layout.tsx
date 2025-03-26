@@ -7,6 +7,9 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Shield, Home, FileText, Bell, Settings, LogOut, Sun, Moon, User, Lock } from "lucide-react"
 
+import { logoutUser } from "../../../lib/logoutUser";
+
+
 import { Button } from "@/components/ui/button"
 import {
   SidebarProvider,
@@ -125,16 +128,25 @@ export default function DashboardLayout({
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
-            
+
           </SidebarContent>
           <SidebarFooter>
             <div className="px-3 py-2">
-              <Button variant="outline" className="w-full justify-start" asChild>
+
+            <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={() => {
+                  logoutUser(); // Call the logout function to clear tokens, cookies, and localStorage
+                }}
+                asChild
+              >
                 <Link href="/login">
                   <LogOut className="mr-2 h-4 w-4" />
                   Sign out
                 </Link>
               </Button>
+
             </div>
           </SidebarFooter>
         </Sidebar>
@@ -183,12 +195,19 @@ export default function DashboardLayout({
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href="/login">
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>Log out</span>
-                    </Link>
-                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem
+                      onClick={() => {
+                        logoutUser(); // Call the logout function
+                      }}
+                      asChild
+                    >
+                      <Link href="/login">
+                        <LogOut className="mr-2 h-4 w-4" />
+                        <span>Log out</span>
+                      </Link>
+                    </DropdownMenuItem>
+
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>

@@ -24,18 +24,6 @@ export function DocumentsSection({
   selfie
 }: DocumentsSectionProps) {
 
-  const [selectedDocument, setSelectedDocument] = useState<string | null>(null); // Track the selected document for the popup
-
-    // Function to handle opening the modal
-    const handleViewDocument = (url: string) => {
-      setSelectedDocument(url);
-    };
-  
-    // Function to handle closing the modal
-    const handleCloseModal = () => {
-      setSelectedDocument(null);
-    };
-
   // Construct document details manually based on props
   const documents: Document[] = [
     {
