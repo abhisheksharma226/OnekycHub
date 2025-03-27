@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Upload, CheckCircle, Clock, XCircle } from "lucide-react";
+import { Upload, CheckCircle, Clock, XCircle, Eye } from "lucide-react";
 import { useState } from "react";
 
 interface Document {
@@ -92,22 +92,22 @@ export function DocumentsSection({
             </div>
 
             <div className="flex items-center space-x-3">
-              {/* Show status badge */}
-              {getStatusBadge(doc.status || "Not Uploaded")}
+  {/* Show status badge */}
+  {getStatusBadge(doc.status || "Not Uploaded")}
 
-              {/* Show 'View Document' button if URL exists */}
-              {doc.url && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center"
-                  onClick={() => window.open(doc.url, "_blank")}
-                >
-                  <Upload className="h-4 w-4 mr-1" />
-                  View Document
-                </Button>
-              )}
-            </div>
+            {/* Show 'View Document' button if URL exists */}
+            {doc.url && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center"
+                onClick={() => window.open(doc.url, "_blank")}
+              >
+                <Eye className="h-4 w-4 mr-1" />
+                View Document
+              </Button>
+            )}
+          </div>
 
           </div>
         ))}
