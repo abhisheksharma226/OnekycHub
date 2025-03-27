@@ -12,7 +12,7 @@ export default function SuccessStep() {
       router.push(`/dashboard/user/?email=${encodeURIComponent(email)}`)
     } else {
       // Fallback in case the email parameter is missing
-      router.push("/dashboard")
+      router.push("/dashboard/user")
     }
   }
 
