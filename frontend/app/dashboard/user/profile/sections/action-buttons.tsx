@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Download, Edit, Trash2 } from "lucide-react";
 import DeleteAccount from "@/lib/deleteUser";
+import { useRouter } from "next/navigation";
 
 interface ActionButtonsProps {
   isEditing: boolean;
@@ -11,6 +12,12 @@ interface ActionButtonsProps {
 }
 
 export function ActionButtons({ isEditing, onEdit, onCancel }: ActionButtonsProps) {
+  const router = useRouter(); // Initialize Next.js router
+
+  const handleUpdateProfile = () => {
+    router.push("/register"); // Redirect to the /register route
+  };
+  
   const handleDeleteAccount = async () => {
     try {
       const confirmation = confirm(
@@ -47,7 +54,7 @@ export function ActionButtons({ isEditing, onEdit, onCancel }: ActionButtonsProp
       <div className="flex flex-wrap gap-2">
         {!isEditing && (
           <>
-            <Button variant="outline" className="flex items-center" onClick={onEdit}>
+            <Button variant="outline" className="flex items-center" onClick={handleUpdateProfile}>
               <Edit className="h-4 w-4 mr-2" />
               Update Profile
             </Button>
