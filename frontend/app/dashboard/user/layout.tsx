@@ -1,16 +1,25 @@
-"use client"
+"use client";
 
-import type React from "react"
-
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Shield, Home, FileText, Bell, Settings, LogOut, Sun, Moon, User, Lock } from "lucide-react"
+import type React from "react";
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  Shield,
+  Home,
+  FileText,
+  Bell,
+  Settings,
+  LogOut,
+  Sun,
+  Moon,
+  User,
+  Lock,
+} from "lucide-react";
 
 import { logoutUser } from "../../../lib/logoutUser";
 
-
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   SidebarProvider,
   Sidebar,
@@ -24,9 +33,9 @@ import {
   SidebarGroupLabel,
   SidebarGroupContent,
   SidebarTrigger,
-} from "@/components/ui/sidebar"
-import { useTheme } from "@/components/theme-provider"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+} from "@/components/ui/sidebar";
+import { useTheme } from "@/components/theme-provider";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,24 +43,30 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
+
+// Import the custom hook
+import useUserData from "@/lib/userData";
 
 export default function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-  const pathname = usePathname()
-  const { setTheme, theme } = useTheme()
-  const [isMounted, setIsMounted] = useState(false)
+  const pathname = usePathname();
+  const { setTheme, theme } = useTheme();
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Fetch user data
+  const { userData, isLoading, error } = useUserData();
 
   // Prevent hydration mismatch
   useEffect(() => {
-    setIsMounted(true)
-  }, [])
+    setIsMounted(true);
+  }, []);
 
   if (!isMounted) {
-    return null
+    return null;
   }
 
   return (
@@ -160,25 +175,35 @@ export default function DashboardLayout({
             </div>
 
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+              {/* <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
                 {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
                 <span className="sr-only">Toggle theme</span>
-              </Button>
+              </Button> */}
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User" />
-                      <AvatarFallback>JD</AvatarFallback>
+                    <AvatarImage
+                        src={userData?.selfie || "/placeholder-avatar.png"}
+                        alt={userData?.firstName || "User"}
+                      />
+                      <AvatarFallback>
+                          {userData?.firstName
+                            ? userData.firstName[0].toUpperCase()
+                            : "X"}
+                            {userData?.lastName
+                            ? userData.lastName[0].toUpperCase()
+                            : "Y"}
+                      </AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end" forceMount>
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">John Doe</p>
-                      <p className="text-xs leading-none text-muted-foreground">john.doe@example.com</p>
+                      <p className="text-sm font-medium leading-none">{userData?.firstName} {userData?.lastName}</p>
+                      <p className="text-xs leading-none text-muted-foreground">{userData?.email}</p>
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
