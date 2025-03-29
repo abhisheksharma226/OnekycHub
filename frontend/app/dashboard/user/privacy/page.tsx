@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Lock, Building, AlertCircle } from "lucide-react"
+import { useEffect, useState } from "react";
+import { Lock, Building, AlertCircle } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
   Dialog,
   DialogContent,
@@ -18,7 +18,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
+import CONFIG from "@/utils/config";
 
 export default function PrivacyPage() {
   const [dataSharing, setDataSharing] = useState({
@@ -26,23 +27,95 @@ export default function PrivacyPage() {
     addressProof: true,
     incomeProof: false,
     personalInfo: true,
-  })
+    
+  });
+
 
   const [institutions, setInstitutions] = useState([
     { id: 1, name: "Global Finance Corp", access: true },
     { id: 2, name: "Apex Banking", access: false },
     { id: 3, name: "Secure Trust", access: false },
-  ])
+  ]);
+
 
   const handleInstitutionToggle = (id: number) => {
-    setInstitutions(institutions.map((inst) => (inst.id === id ? { ...inst, access: !inst.access } : inst)))
-  }
+    setInstitutions(institutions.map((inst) => (inst.id === id ? { ...inst, access: !inst.access } : inst)));
+  };
+
+  
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleDataSharingToggle = (key: keyof typeof dataSharing) => {
     setDataSharing({
       ...dataSharing,
       [key]: !dataSharing[key],
-    })
+    });
+  };
+
+  const savePreferences = async (dataPreferences: any) => {
+    const email = localStorage.getItem("email"); // Retrieve email from localStorage
+
+    if (!email) {
+      alert("User is not logged in.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${CONFIG.BASE_URL}/preferences/save`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, dataPreferences }),
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        alert("Preferences saved successfully.");
+      } else {
+        alert(result.error);
+      }
+    } catch (error) {
+      console.error("Error saving preferences:", error);
+    }
+  };
+
+  const fetchPreferences = async () => {
+    const email = localStorage.getItem("email"); // Retrieve email from localStorage
+
+    if (!email) {
+      alert("User is not logged in.");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch(`${CONFIG.BASE_URL}/preferences/get?email=${email}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setDataSharing(result.dataPreferences);
+      } else {
+        console.error("Failed to fetch preferences");
+      }
+    } catch (error) {
+      console.error("Error fetching preferences:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPreferences();
+  }, []);
+
+  if (isLoading) {
+    return <p>Loading...</p>;
   }
 
   return (
@@ -68,129 +141,77 @@ export default function PrivacyPage() {
         </TabsList>
 
         <TabsContent value="data-sharing" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Data Sharing Preferences</CardTitle>
-              <CardDescription>
-                Control which types of data can be shared with authorized financial institutions
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between space-x-2">
-                <div className="flex flex-col space-y-1">
-                  <Label htmlFor="id-proof" className="font-medium">
-                    ID Proof
-                  </Label>
-                  <p className="text-sm text-muted-foreground">Share your government-issued ID documents</p>
-                </div>
-                <Switch
-                  id="id-proof"
-                  checked={dataSharing.idProof}
-                  onCheckedChange={() => handleDataSharingToggle("idProof")}
-                />
-              </div>
+  <Card>
+    <CardHeader>
+      <CardTitle>Data Sharing Preferences</CardTitle>
+      <CardDescription>
+        Control which types of data can be shared with authorized financial institutions
+      </CardDescription>
+    </CardHeader>
+    <CardContent className="space-y-4">
+      <div className="flex items-center justify-between space-x-2">
+        <div className="flex flex-col space-y-1">
+          <Label htmlFor="id-proof" className="font-medium">
+            ID Proof
+          </Label>
+          <p className="text-sm text-muted-foreground">Share your government-issued ID documents</p>
+        </div>
+        <Switch
+          id="id-proof"
+          checked={dataSharing.idProof}
+          onCheckedChange={() => handleDataSharingToggle("idProof")}
+        />
+      </div>
 
-              <div className="flex items-center justify-between space-x-2">
-                <div className="flex flex-col space-y-1">
-                  <Label htmlFor="address-proof" className="font-medium">
-                    Address Proof
-                  </Label>
-                  <p className="text-sm text-muted-foreground">Share your address verification documents</p>
-                </div>
-                <Switch
-                  id="address-proof"
-                  checked={dataSharing.addressProof}
-                  onCheckedChange={() => handleDataSharingToggle("addressProof")}
-                />
-              </div>
+      <div className="flex items-center justify-between space-x-2">
+        <div className="flex flex-col space-y-1">
+          <Label htmlFor="address-proof" className="font-medium">
+            Address Proof
+          </Label>
+          <p className="text-sm text-muted-foreground">Share your address verification documents</p>
+        </div>
+        <Switch
+          id="address-proof"
+          checked={dataSharing.addressProof}
+          onCheckedChange={() => handleDataSharingToggle("addressProof")}
+        />
+      </div>
 
-              <div className="flex items-center justify-between space-x-2">
-                <div className="flex flex-col space-y-1">
-                  <Label htmlFor="income-proof" className="font-medium">
-                    Income Proof
-                  </Label>
-                  <p className="text-sm text-muted-foreground">Share your income verification documents</p>
-                </div>
-                <Switch
-                  id="income-proof"
-                  checked={dataSharing.incomeProof}
-                  onCheckedChange={() => handleDataSharingToggle("incomeProof")}
-                />
-              </div>
+      <div className="flex items-center justify-between space-x-2">
+        <div className="flex flex-col space-y-1">
+          <Label htmlFor="income-proof" className="font-medium">
+            Income Proof
+          </Label>
+          <p className="text-sm text-muted-foreground">Share your income verification documents</p>
+        </div>
+        <Switch
+          id="income-proof"
+          checked={dataSharing.incomeProof}
+          onCheckedChange={() => handleDataSharingToggle("incomeProof")}
+        />
+      </div>
 
-              <div className="flex items-center justify-between space-x-2">
-                <div className="flex flex-col space-y-1">
-                  <Label htmlFor="personal-info" className="font-medium">
-                    Personal Information
-                  </Label>
-                  <p className="text-sm text-muted-foreground">Share your basic personal details (name, DOB, etc.)</p>
-                </div>
-                <Switch
-                  id="personal-info"
-                  checked={dataSharing.personalInfo}
-                  onCheckedChange={() => handleDataSharingToggle("personalInfo")}
-                />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button>Save Preferences</Button>
-            </CardFooter>
-          </Card>
+      <div className="flex items-center justify-between space-x-2">
+        <div className="flex flex-col space-y-1">
+          <Label htmlFor="personal-info" className="font-medium">
+            Personal Information
+          </Label>
+          <p className="text-sm text-muted-foreground">Share your basic personal details (name, DOB, etc.)</p>
+        </div>
+        <Switch
+          id="personal-info"
+          checked={dataSharing.personalInfo}
+          onCheckedChange={() => handleDataSharingToggle("personalInfo")}
+        />
+      </div>
+    </CardContent>
+    <CardFooter>
+      <Button onClick={() => savePreferences(dataSharing)}>Save Preferences</Button>
+    </CardFooter>
+  </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Data Retention</CardTitle>
-              <CardDescription>Control how long your data is stored on our platform</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between space-x-2">
-                <div className="flex flex-col space-y-1">
-                  <Label className="font-medium">Automatic Data Deletion</Label>
-                  <p className="text-sm text-muted-foreground">Automatically delete your data after account closure</p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-
-              <div className="flex items-center justify-between space-x-2">
-                <div className="flex flex-col space-y-1">
-                  <Label className="font-medium">Revoke Access After Expiry</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Automatically revoke institution access after document expiry
-                  </p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="destructive">Request Data Deletion</Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Request Data Deletion</DialogTitle>
-                    <DialogDescription>
-                      This action will permanently delete all your data from our platform. This cannot be undone.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="py-4">
-                    <Alert variant="destructive">
-                      <AlertCircle className="h-4 w-4" />
-                      <AlertTitle>Warning</AlertTitle>
-                      <AlertDescription>
-                        Deleting your data will terminate all your KYC verifications with financial institutions.
-                      </AlertDescription>
-                    </Alert>
-                  </div>
-                  <DialogFooter>
-                    <Button variant="outline">Cancel</Button>
-                    <Button variant="destructive">Confirm Deletion</Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </CardFooter>
-          </Card>
-        </TabsContent>
+  
+</TabsContent>
 
         <TabsContent value="institutions" className="space-y-4">
           <Card>
