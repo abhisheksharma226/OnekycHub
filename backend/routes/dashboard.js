@@ -2,6 +2,7 @@ const express = require("express");
 const User = require("../models/User");
 const userRegistration = require("../models/userRegistration");
 const {authenticateToken } = require("../middleware/Authorization");
+const DataSharing = require("../models/UserConsent"); // Import the DataSharing model
 
 const router = express.Router();
 
@@ -64,5 +65,66 @@ router.get("/dashboard/user", authenticateToken, async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
+
+router.post('/preferences/save', async (req, res) => {
+  const email = req.body.email; // Expecting email from request body
+  const dataPreferences = req.body.dataPreferences; // Get dataPreferences from request body
+
+  // console.log("Received email:", email);
+  // console.log("Received dataPreferences:", dataPreferences);
+
+  // Check if email is provided
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required' });
+  }
+
+  try {
+    // Find user by email and update dataPreferences, or create a new user if not found
+    const user = await DataSharing.findOneAndUpdate(
+      { email }, // Find user by email
+      { $set: { dataPreferences } }, // Update the dataPreferences field
+      { upsert: true, new: true } // Create a new record if not found
+    );
+
+    res.status(200).json({ message: 'Preferences saved successfully', user });
+  } catch (err) {
+    console.error("Error saving preferences:", err);
+    res.status(500).json({ error: 'Error saving preferences', details: err });
+  }
+});
+
+
+router.get("/preferences/get", async (req, res) => {
+  const { email } = req.query; // Retrieve the email from query parameters
+
+  if (!email) {
+    return res.status(400).json({ error: "Email is required" });
+  }
+
+  try {
+    // Find the preferences for the user with the given email
+    const userPreferences = await DataSharing.findOne({ email });
+
+    if (!userPreferences) {
+      // If no preferences are found, return a default response
+      return res.status(200).json({
+        dataPreferences: {
+          idProof: true,
+          addressProof: true,
+          incomeProof: false,
+          personalInfo: true,
+        },
+      });
+    }
+
+    // If preferences are found, return them
+    res.status(200).json({ dataPreferences: userPreferences.dataPreferences });
+  } catch (error) {
+    console.error("Error fetching preferences:", error);
+    res.status(500).json({ error: "An error occurred while fetching preferences" });
+  }
+});
+
 
 module.exports = router;
