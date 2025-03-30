@@ -80,28 +80,53 @@ export default function PrivacyPage() {
     }
   };
 
+  const isTokenExpired = (token: string | null): boolean => {
+    if (!token) return true; // If token is missing, consider it expired
+  
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1])); // Decode JWT payload
+      return payload.exp * 1000 < Date.now(); // Compare expiry timestamp with current time
+    } catch (e) {
+      return true; // If decoding fails, assume token is invalid
+    }
+  };
+  
   const fetchPreferences = async () => {
-    const email = localStorage.getItem("email"); // Retrieve email from localStorage
-
-    if (!email) {
-      alert("User is not logged in.");
-      setIsLoading(false);
+    const token = localStorage.getItem("token");
+    const email = localStorage.getItem("email");
+  
+    // ✅ **Check if token is missing or expired**
+    if (!token || !email || isTokenExpired(token)) {
+      alert("Session expired. Please log in again.");
+      localStorage.removeItem("token");
+      localStorage.removeItem("email");
+      window.location.href = "/login";
       return;
     }
-
+  
     try {
       const response = await fetch(`${CONFIG.BASE_URL}/preferences/get?email=${email}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // ✅ **Pass token in the request**
         },
       });
-
+  
+      if (response.status === 401) {
+        // ✅ **If the server returns Unauthorized (401), log the user out**
+        alert("Session expired. Please log in again.");
+        localStorage.removeItem("token");
+        localStorage.removeItem("email");
+        window.location.href = "/login";
+        return;
+      }
+  
       if (response.ok) {
         const result = await response.json();
         setDataSharing(result.dataPreferences);
       } else {
-        console.error("Failed to fetch preferences");
+        alert("Failed to fetch preferences. Please try again.");
       }
     } catch (error) {
       console.error("Error fetching preferences:", error);
@@ -109,10 +134,11 @@ export default function PrivacyPage() {
       setIsLoading(false);
     }
   };
-
+  
   useEffect(() => {
     fetchPreferences();
   }, []);
+  
 
   if (isLoading) {
     return <p>Loading...</p>;
@@ -349,5 +375,9 @@ export default function PrivacyPage() {
       </Tabs>
     </div>
   )
+}
+
+function setError(arg0: string) {
+  throw new Error("Function not implemented.");
 }
 

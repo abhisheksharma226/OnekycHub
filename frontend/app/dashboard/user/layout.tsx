@@ -117,7 +117,7 @@ export default function DashboardLayout({
               <SidebarGroupContent>
                 <SidebarMenu>
                   <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={pathname === "/dashboard/user/profile"}>
+                    <SidebarMenuButton asChild isActive={pathname === "/dashboard/profie"}>
                       <Link href="/dashboard/user/profile">
                         <User className="h-4 w-4" />
                         <span>Profile</span>
@@ -133,8 +133,8 @@ export default function DashboardLayout({
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                   <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={pathname === "/dashboard/settings"}>
-                      <Link href="/dashboard/settings">
+                    <SidebarMenuButton asChild isActive={pathname === "/dashboard/user/settings"}>
+                      <Link href="/dashboard/user/settings">
                         <Settings className="h-4 w-4" />
                         <span>Settings</span>
                       </Link>
@@ -214,7 +214,7 @@ export default function DashboardLayout({
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard/settings">
+                    <Link href="/dashboard/user/settings">
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Settings</span>
                     </Link>
