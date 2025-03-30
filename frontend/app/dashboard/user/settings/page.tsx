@@ -86,6 +86,7 @@ export default function SecurityAndPrivacySettings() {
       if (!response.ok) {
         console.error("❌ Failed to save preferences.");
       } else {
+        alert("Preferences saved successfully!");
         console.log("✅ Preferences successfully saved!");
       }
     } catch (error) {
@@ -111,9 +112,9 @@ export default function SecurityAndPrivacySettings() {
     });
   
     // Wait for state update and save
-    setTimeout(() => {
-      savePreferences(preferences);
-    }, 100);
+    // setTimeout(() => {
+    //   savePreferences(preferences);
+    // }, 100);
   };
   
 
