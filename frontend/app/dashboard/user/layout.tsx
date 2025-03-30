@@ -92,17 +92,17 @@ export default function DashboardLayout({
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
-                  <SidebarMenuItem>
+                  {/* <SidebarMenuItem>
                     <SidebarMenuButton asChild isActive={pathname === "/dashboard/documents"}>
                       <Link href="/dashboard/documents">
                         <FileText className="h-4 w-4" />
                         <span>Documents</span>
                       </Link>
                     </SidebarMenuButton>
-                  </SidebarMenuItem>
+                  </SidebarMenuItem> */}
                   <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={pathname === "/dashboard/notifications"}>
-                      <Link href="/dashboard/notifications">
+                    <SidebarMenuButton asChild isActive={pathname === "/dashboard/user/notifications"}>
+                      <Link href="/dashboard/user/notifications">
                         <Bell className="h-4 w-4" />
                         <span>Notifications</span>
                       </Link>
