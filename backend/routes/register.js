@@ -13,8 +13,8 @@ router.post(
   async (req, res) => {
     try {
       // Log uploaded files and request body
-      console.log("Uploaded files:", req.files);
-      console.log("Request body:", req.body);
+      // console.log("Uploaded files:", req.files);
+      // console.log("Request body:", req.body);
 
       // Extract form data
       const {

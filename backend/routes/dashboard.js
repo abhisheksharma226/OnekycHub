@@ -4,6 +4,7 @@ const userRegistration = require("../models/userRegistration");
 const {authenticateToken } = require("../middleware/Authorization");
 const DataSharing = require("../models/UserConsent"); // Import the DataSharing model
 
+
 const router = express.Router();
 
 // Route to get user data by email
@@ -125,6 +126,58 @@ router.get("/preferences/get", async (req, res) => {
     res.status(500).json({ error: "An error occurred while fetching preferences" });
   }
 });
+
+
+// ✅ **Route to update user preferences**
+router.post("/settings/save", async (req, res) => {
+  try {
+    const { email, securityPreferences, dataPrivacy } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
+    }
+
+    // ✅ **Find existing user preferences or create a new one**
+    let userPreferences = await DataSharing.findOne({ email });
+
+    if (!userPreferences) {
+      userPreferences = new DataSharing({ email, securityPreferences, dataPrivacy });
+    } else {
+      userPreferences.securityPreferences = securityPreferences;
+      userPreferences.dataPrivacy = dataPrivacy;
+    }
+
+    await userPreferences.save();
+
+    return res.status(200).json({ message: "Preferences saved successfully" });
+  } catch (error) {
+    console.error("Error saving preferences:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// ✅ **Route to fetch user preferences**
+router.get("/settings/get", async (req, res) => {
+  try {
+    const { email } = req.query;
+
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
+    }
+
+    const userPreferences = await DataSharing.findOne({ email });
+
+    if (!userPreferences) {
+      return res.status(404).json({ error: "User preferences not found" });
+    }
+
+    return res.status(200).json({ data: userPreferences });
+  } catch (error) {
+    console.error("Error fetching preferences:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 
 
 module.exports = router;
