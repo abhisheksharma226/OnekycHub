@@ -7,7 +7,8 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import CONFIG from "@/utils/config";
-import { Badge, Bell, Shield } from "lucide-react";
+import { Bell, Shield } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export default function SecurityAndPrivacySettings() {
   
@@ -114,10 +115,10 @@ export default function SecurityAndPrivacySettings() {
                 </div>
               </CardContent>
               <CardFooter className="flex justify-between border-t border-gray-100 pt-4">
-                <Button variant="outline">Mark All as Read</Button>
+                {/* <Button variant="outline">Mark All as Read</Button>
                 <Button variant="ghost" size="sm">
                   View All Notifications
-                </Button>
+                </Button> */}
               </CardFooter>
             </Card>
 
