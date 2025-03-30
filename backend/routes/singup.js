@@ -2,6 +2,7 @@ const express = require("express");
 const User = require("../models/User");
 const Institution = require("../models/Institution");
 const userRegistration = require("../models/userRegistration");
+const UserConsent = require("../models/UserConsent");
 const router = express.Router(); 
 
 
@@ -90,8 +91,10 @@ router.post("/signup", async (req, res) => {
       // Delete user from Signup and Registration schemas
       const deletedSignup = await User.findOneAndDelete({ email });
       const deletedRegistration = await userRegistration.findOneAndDelete({ email });
+      const deletedUserConsent = await UserConsent.findOneAndDelete({ email });
+
   
-      if (!deletedSignup && !deletedRegistration) {
+      if (!deletedSignup && !deletedRegistration && !deletedUserConsent) {
         return res.status(404).json({ message: "No account found with this email." });
       }
   
@@ -100,6 +103,7 @@ router.post("/signup", async (req, res) => {
         deleted: {
           User: !!deletedSignup,
           userRegistration: !!deletedRegistration,
+          UserConsent: !!deletedUserConsent,
         },
       });
     } catch (error) {
