@@ -203,11 +203,14 @@ const togglePopup = () => setShowPopup(!showPopup);
         </div>
       </div>
   
-      <Alert>
-        <AlertCircle className="h-4 w-4" />
+      <Alert variant="destructive">
+        <AlertCircle className="h-4 w-4 text-red-500" />
         <AlertTitle>Action Required</AlertTitle>
-        <AlertDescription>Please complete your KYC verification to unlock all features.</AlertDescription>
+        <AlertDescription>
+          Please complete your KYC verification to unlock all features.
+        </AlertDescription>
       </Alert>
+
   
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <div>
