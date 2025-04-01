@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation"; // Import useRouter for redirection
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -22,16 +23,41 @@ export default function SecurityAndPrivacySettings() {
     },
   });
 
+  const router = useRouter(); // Initialize useRouter for redirection
+
   useEffect(() => {
     const storedEmail = localStorage.getItem("email");
-    if (storedEmail) {
-      setEmail(storedEmail);
-      fetchPreferences(storedEmail);
-    } else {
-      console.error("❌ No email found in local storage.");
+    const token = localStorage.getItem("token");
+
+    if (!token || !storedEmail) {
+      alert("Session expired. Please log in again.");
+      router.push("/login"); // Redirect to login page
+      return;
     }
+
+    if (isTokenExpired(token)) {
+      alert("Your session has expired. Please log in again.");
+      localStorage.removeItem("token"); // Clear expired token
+      localStorage.removeItem("email"); // Clear email
+      router.push("/login"); // Redirect to login page
+      return;
+    }
+
+    setEmail(storedEmail);
+    fetchPreferences(storedEmail);
   }, []);
-  
+
+  // Function to check if token is expired
+  const isTokenExpired = (token: string): boolean => {
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1])); // Decode JWT payload
+      const expiry = payload.exp * 1000; // Convert to milliseconds
+      return Date.now() >= expiry;
+    } catch (error) {
+      console.error("Invalid token:", error);
+      return true; // Assume expired if there's an error
+    }
+  };
 
   // Fetch user preferences from API
   const fetchPreferences = async (userEmail: string) => {
@@ -40,7 +66,7 @@ export default function SecurityAndPrivacySettings() {
       if (response.ok) {
         const data = await response.json();
         console.log("Fetched Preferences from API:", data); // Debugging
-  
+
         if (data.data) {
           setPreferences({
             securityPreferences: {
@@ -59,7 +85,6 @@ export default function SecurityAndPrivacySettings() {
       console.error("Error fetching preferences:", error);
     }
   };
-  
 
   // Save preferences automatically whenever they change
   const savePreferences = async (updatedPreferences: typeof preferences) => {
@@ -67,10 +92,10 @@ export default function SecurityAndPrivacySettings() {
       console.error("❌ Email is missing. Preferences cannot be saved.");
       return;
     }
-  
+
     try {
       console.log("Saving Preferences:", updatedPreferences); // Debugging log
-  
+
       const response = await fetch(`${CONFIG.BASE_URL}/settings/save`, {
         method: "POST",
         headers: {
@@ -82,7 +107,7 @@ export default function SecurityAndPrivacySettings() {
           dataPrivacy: updatedPreferences.dataPrivacy,
         }),
       });
-  
+
       if (!response.ok) {
         console.error("❌ Failed to save preferences.");
       } else {
@@ -93,7 +118,7 @@ export default function SecurityAndPrivacySettings() {
       console.error("Error saving preferences:", error);
     }
   };
-  
+
   // Handle toggle switch and auto-save
   const handleToggle = <T extends keyof typeof preferences>(
     category: T,
@@ -107,16 +132,12 @@ export default function SecurityAndPrivacySettings() {
           [key]: !prev[category][key as keyof (typeof preferences)[T]],
         },
       };
-  
+
       return updatedPreferences;
     });
-  
-    // Wait for state update and save
-    // setTimeout(() => {
-    //   savePreferences(preferences);
-    // }, 100);
   };
-  
+
+
 
 
   return (
@@ -443,5 +464,5 @@ export default function SecurityAndPrivacySettings() {
       </main>
     </div>
   )
-}
 
+}
